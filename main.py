@@ -1,3 +1,4 @@
+import copy
 import math
 import random
 
@@ -86,7 +87,7 @@ def greedyTravellerSalesmanAlgorithm():
     """ obliczanie najlepszej drogi """
     lastVisitedCityIndex = startingCityIndex
     while len(unvisitedCities) > 0:
-        nextCityToVisit, visitCost = getNearestCityFromCity(distances[lastVisitedCityIndex])
+        nextCityToVisit, visitCost = getRandomCityFromNearestNCities(distances[lastVisitedCityIndex])
         if nextCityToVisit not in visitedCitiesIndexes:
             visitedCitiesIndexes.append(nextCityToVisit)
             unvisitedCities.remove(nextCityToVisit)
@@ -95,6 +96,25 @@ def greedyTravellerSalesmanAlgorithm():
             print(f"next city index : {nextCityToVisit}, cost: {visitCost}, visitedCities: {visitedCitiesIndexes}, unvisitedCities: {unvisitedCities}")
     costs.append(distances[lastVisitedCityIndex][startingCityIndex])
     return costs, visitedCitiesIndexes
+
+""" TODO
+    Losuje najbliższe miasto spośrod n miast najbliżych miastu
+    :parameter cityDistances - tablica odległości od miasta
+    :parameter n = 5
+"""
+def getRandomCityFromNearestNCities(cityDistances, n=5):
+    distancesToCalc = []
+    copiedDistances = list(copy.deepcopy(cityDistances))
+    for i in range(0, n):
+        shortestDistance = min(dist for dist in copiedDistances if dist > 0)
+        distancesToCalc.append(shortestDistance)
+        copiedDistances.remove(shortestDistance)
+    randomCityIdx = random.randint(0, n - 1)
+    randomDistance = distancesToCalc[randomCityIdx]
+    print(f"randomCityIdx: {randomCityIdx}, randomDistance: {randomDistance}")
+    nextCityIndex = cityDistances.index(randomDistance)
+    cityDistances[nextCityIndex] = 0  # zabezpieczenie przed powrotem do miasta już odwiedzonego
+    return nextCityIndex, shortestDistance
 
 if __name__ == "__main__":
     costs, visitedCitiesIndexes = greedyTravellerSalesmanAlgorithm()
